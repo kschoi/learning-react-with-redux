@@ -20,6 +20,8 @@ const App = () => {
 ReactDOM.render(<App />, document.querySelector("#root"));
 ```
 
+---
+
 # 01.JSX
 
 ### babel : react jsx
@@ -45,6 +47,8 @@ https://babeljs.io/
 <div style={{ backgroundColor:'red',color:white}}>
 <label className="label" htmlFor="name">{getLabelText()}</label>
 ```
+
+---
 
 # 02.Components
 
@@ -77,13 +81,13 @@ https://semantic-ui.com/
 }
 ```
 
-### Functional Components and Class Components
-
-#### Class Components
+### Class Components
 
 - 일반적으로 코드를 조직화하기 편하다
 - 처음 시작하기 좋다
 - 유저 인풋을 핸들링하기 쉽다
+
+---
 
 # 03.Seasons
 
@@ -145,30 +149,149 @@ Spinner.defaultProps = {
 
 ### helper function
 
-```jsx
-  renderContent() {
-    if (this.state.errorMessage && !this.state.lat) {
-      return <div>Error: {this.state.errorMessage}</div>;
-    }
-
-    if (!this.state.errorMessage && this.state.lat) {
-      return <SeasonDisplay lat={this.state.lat} />;
-    }
-
-    return <Spinner message="Please accept location request..." />;
+```js
+renderContent() {
+  if (this.state.errorMessage && !this.state.lat) {
+    return <div>Error: {this.state.errorMessage}</div>;
   }
 
-  // React says we have to define render!!
-  render() {
-    // if (this.state.errorMessage && !this.state.lat) {
-    //   return <div>Error: {this.state.errorMessage}</div>;
-    // }
-
-    // if (!this.state.errorMessage && this.state.lat) {
-    //   return <SeasonDisplay lat={this.state.lat} />;
-    // }
-
-    // return <Spinner message="Please accept location request..." />;
-    return <div className="border red">{this.renderContent()}</div>;
+  if (!this.state.errorMessage && this.state.lat) {
+    return <SeasonDisplay lat={this.state.lat} />;
   }
+
+  return <Spinner message="Please accept location request..." />;
+}
+
+// React says we have to define render!!
+render() {
+  // if (this.state.errorMessage && !this.state.lat) {
+  //   return <div>Error: {this.state.errorMessage}</div>;
+  // }
+
+  // if (!this.state.errorMessage && this.state.lat) {
+  //   return <SeasonDisplay lat={this.state.lat} />;
+  // }
+
+  // return <Spinner message="Please accept location request..." />;
+  return <div className="border red">{this.renderContent()}</div>;
+}
+```
+
+---
+
+# 04.pics
+
+### event handling flow
+
+- User types in input
+- Callback gets invoked
+- We call setState with the new value
+- component rerenders
+- input is told what its value is (coming from state)
+
+### Controlled vs Uncontrolled
+
+React World
+
+```js
+state -> {term: 'hi there'}
+```
+
+DOM world
+
+```html
+<input value="{go" look at state to get current value} />>
+```
+
+### api test
+
+https://unsplash.com/developers
+
+### axios
+
+```js
+// .then()
+onSearchSubmit(term) {
+  axios.get('https://api.unsplash.com/search/photos', {
+    params: {
+      query: term
+    },
+    headers: {
+      Authorization: 'Client-ID 5869ea741bfb94a8215604a6abc0ec1ba600e8515eeeb3dbab751fdfa598640d'
+    }
+  }).then(res => {
+    console.log(res.data.results);
+  });
+}
+
+// async & await
+onSearchSubmit = async (term) => {
+  const response = await axios.get('https://api.unsplash.com/search/photos', {
+    params: {
+      query: term
+    },
+    headers: {
+      Authorization: 'Client-ID 5869ea741bfb94a8215604a6abc0ec1ba600e8515eeeb3dbab751fdfa598640d'
+    }
+  });
+
+  this.setState({
+    images: response.data.results
+  })
+}
+```
+
+#### axios.create
+
+```js
+import axios from "axios";
+
+export default axios.create({
+  baseURL: "https://api.unsplash.com",
+  headers: {
+    Authorization:
+      "Client-ID 5869ea741bfb94a8215604a6abc0ec1ba600e8515eeeb3dbab751fdfa598640d"
+  }
+});
+```
+
+### React Refs
+
+- 단일 DOM 엘리먼트에 접근가능하다
+- constructor안에서 ref를 생성하고, 특정 JSX를 props으로 넘긴다.
+
+```js
+constructor(props) {
+  super(props);
+  this.imageRef = React.createRef();
+}
+
+componentDidMount() {
+  console.log(this.imageRef);
+}
+
+render() {
+  const { urls, description } = this.props.image;
+  return (
+    <div>
+      <img
+        ref={this.imageRef}
+        src={urls.regular}
+        alt={description}
+      />
+    </div>
+  );
+}
+```
+
+### callbacks on image load
+
+```js
+componentDidMount() {
+  this.imageRef.current.addEventListener('load', this.setSpans);
+}
+
+setSpans = () => {
+  console.log(this.imageRef.current.clientHeight);
+}
 ```
