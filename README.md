@@ -295,3 +295,12 @@ setSpans = () => {
   console.log(this.imageRef.current.clientHeight);
 }
 ```
+
+---
+
+# 05.video
+
+### google youtube & search api
+
+https://console.developers.google.com/
+https://developers.google.com/s/results?q=search%20api
