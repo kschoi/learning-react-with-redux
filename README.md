@@ -300,9 +300,146 @@ setSpans = () => {
 
 # 05.video
 
-### google youtube & search api
+### 프로젝트 목표
+
+- props로 비디오 검색 구현하기
+
+#### google youtube & search api
 
 https://console.developers.google.com/
 https://developers.google.com/s/results?q=search%20api
+
+---
+
+# 06.songs
+
+### 프로젝트 목표
+
+- redux: createStore, combineReducers
+- react-redux: Provide, connect()
+
+---
+
+# 07.blog ( Async Actions with Redux Thunk)
+
+### 프로젝트 목표
+
+- reducers 목적 이해
+- Redux에서의 API 요청 이해
+- redux-thunk의 목적 이해
+
+### 일반적인 Redux 데이터 로딩 과정
+
+- 컴포넌트가 스크린에 렌더링된다
+- 컴포넌트의 componentDidMount 라이프사이클 메서드가 호출된다
+- componentDidMount 메서드에서 액션 크리에이터를 호출한다
+
+  └ 컴포넌트는 데이터 패칭이 정의된 액션 크리에이터의 호출을 담당한다.
+
+  ```js
+  // PostList.js
+  componentDidMount() {
+    this.props.fetchPosts()
+  }
+  ```
+
+- 액션 크리에이터에서 비동기 API 요청을 실행한다.
+- API가 data를 반환한다
+- 액션 크리에이터가 패치된 데이터를 payload 프로퍼티에 담아서 action을 반환한다.
+
+  └ 액션 크리에이터는 API 요청을 담당한다. _(이곳이 Redux-Thunk가 역할하는 시점)_
+
+- 어떤 리듀서가 액션을 보고 있다가, payload에 데이터를 반환한다.
+- 우리가 새로운 state 오브젝트를 생성하면, reduc/react-redux는 앱을 reredering한다.
+
+  └ 패칭 데이터가 들어와서 새로운 state가 생성되면, mapStateToProps 함수를 통해 컴포넌트로 들어온다.
+
+### Redux Cycle
+
+Action Creator -> Action -> dispatch -> middleware(thunk, saga...) -> Reducers -> State
+
+### Middleware in Redux
+
+- dispatch 하는 모든 액션에서 호출되는 함수이다.
+- 액션 내에 Stop, Modify가 가능하다.
+- 엄청나게 많은 오픈소스 미들웨어가 존재한다.
+- 보편적으로 미들웨어를 사용하는 목적은 비동기 액션을 처리하기 위해서이다.
+
+### Normal Rules
+
+- 액션 크리에이터는 반드시 액션 오브젝트를 반환해야한다.
+- 액션은 반드시 type 프로퍼티를 가져야 한다.
+- 액션은 옵셔널하게 payload를 가질 수 있다.
+
+### Rules with Redux Thunk
+
+github.com/reduxjs/redux-thunk
+
+- 액션 크리에이터는 액션 오브젝트를 반환할 수도 있고, 함수를 반환할 수도 있다. (함수인 경우 즉시 실행)
+- 액션 크리에이터가 액션 오브젝트를 반환하면 바로 reducer로 넘어간다.
+- 액션 크리에이터가 함수를 반환하면 dispatch를 담아 인자로 하여 함수를 실행한뒤, 요청이 끝날때까지 기다렸다가, 요청 완료 후 액션을 디스패치한다.
+- 새로운 액션이 생성된다.
+
+#### api/jsonPlaceholder.js
+
+```js
+import axios from "axios";
+
+export default axios.create({
+  baseURL: "http://jsonplaceholder.typicode.com"
+});
+```
+
+#### actions/index.js
+
+```js
+import jsonPlaceholder from '../api/jsonPlaceholder';
+
+// Bad approach!!!!
+// Error: Actions must be plain objects. Use custom middleware for async actions.
+// export const fetchPosts = async () => {
+//     const response = await jsonPlaceholder.get('/posts');
+
+//     return {
+//         type: 'FETCH_POSTS',
+//         payload: response
+//     }
+// };
+
+// width promise
+// export const fetchPosts = () => {
+//     const promise = jsonPlaceholder.get('/posts');
+
+//     return {
+//         type: 'FETCH_POSTS',
+//         payload: promise
+//     }
+// };
+
+// width redux-thunk
+// export const fetchPosts = () => {
+// 	return async (dispatch, getState) => {
+// 		const response = await jsonPlaceholder.get('/posts');
+
+// 		dispatch({
+// 			type: 'FETCH_POSTS',
+// 			payload: response
+// 		});
+// 	}
+// };
+// =>
+export const fetchPosts = () => async dispatch => {
+	const response = await jsonPlaceholder.get('/posts');
+
+	dispatch({
+		type: 'FETCH_POSTS',
+		payload: response
+	});
+};
+```
+
+### JSONPlaceholder API
+
+jsonplaceholder.typicode.com
 
 ---
