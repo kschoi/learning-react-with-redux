@@ -326,7 +326,11 @@ https://developers.google.com/s/results?q=search%20api
 
 - reducers 목적 이해
 - Redux에서의 API 요청 이해
-- redux-thunk의 목적 이해
+- redux-thunk 미들웨어 이해
+
+### JSONPlaceholder API
+
+jsonplaceholder.typicode.com
 
 ### 일반적인 Redux 데이터 로딩 과정
 
@@ -358,16 +362,21 @@ https://developers.google.com/s/results?q=search%20api
 
 Action Creator -> Action -> dispatch -> middleware(thunk, saga...) -> Reducers -> State
 
+- redux: 리덕스 라이브러리
+- react-redux: 리액트와 리덕스 사이의 통합 레이어
+- axios: 네트워크 요청을 도와줌
+- redux-thunk: 리덕스 애플리케이션 내에서 요청을 도와주는 미들웨어
+
 ### Middleware in Redux
 
-- dispatch 하는 모든 액션에서 호출되는 함수이다.
-- 액션 내에 Stop, Modify가 가능하다.
+- dispatch 하는 모든 액션과 함께 호출되는 함수이다.
+- 액션과 함께 Stop, Modify가 가능하다.
 - 엄청나게 많은 오픈소스 미들웨어가 존재한다.
-- 보편적으로 미들웨어를 사용하는 목적은 비동기 액션을 처리하기 위해서이다.
+- 보편적으로 미들웨어를 사용하는 목적은 비동기 액션 처리이다.
 
 ### Normal Rules
 
-- 액션 크리에이터는 반드시 액션 오브젝트를 반환해야한다.
+- 액션 크리에이터는 반드시 plain action object를 반환해야한다.
 - 액션은 반드시 type 프로퍼티를 가져야 한다.
 - 액션은 옵셔널하게 payload를 가질 수 있다.
 
@@ -375,10 +384,11 @@ Action Creator -> Action -> dispatch -> middleware(thunk, saga...) -> Reducers -
 
 github.com/reduxjs/redux-thunk
 
-- 액션 크리에이터는 액션 오브젝트를 반환할 수도 있고, 함수를 반환할 수도 있다. (함수인 경우 즉시 실행)
-- 액션 크리에이터가 액션 오브젝트를 반환하면 바로 reducer로 넘어간다.
-- 액션 크리에이터가 함수를 반환하면 dispatch를 담아 인자로 하여 함수를 실행한뒤, 요청이 끝날때까지 기다렸다가, 요청 완료 후 액션을 디스패치한다.
-- 새로운 액션이 생성된다.
+1. 액션 크리에이터는 plain action object를 반환할 수도 있고, function을 반환할 수도 있다. (함수인 경우 즉시 실행)
+2. 액션 크리에이터가 plain action object를 반환하면 바로 reducer로 넘어간다.
+3. 액션 크리에이터가 function을 반환하면, dispatch, getState를 인자로 받는 function을 실행한뒤, 요청이 끝날때까지 기다렸다가 요청 완료 후 액션을 디스패치한다.
+4. 다시 1번으로 넘어간다.
+5. plain object이 생성된다.
 
 #### api/jsonPlaceholder.js
 
@@ -393,7 +403,7 @@ export default axios.create({
 #### actions/index.js
 
 ```js
-import jsonPlaceholder from '../api/jsonPlaceholder';
+import jsonPlaceholder from "../api/jsonPlaceholder";
 
 // Bad approach!!!!
 // Error: Actions must be plain objects. Use custom middleware for async actions.
@@ -406,7 +416,7 @@ import jsonPlaceholder from '../api/jsonPlaceholder';
 //     }
 // };
 
-// width promise
+// with promise
 // export const fetchPosts = () => {
 //     const promise = jsonPlaceholder.get('/posts');
 
@@ -416,7 +426,7 @@ import jsonPlaceholder from '../api/jsonPlaceholder';
 //     }
 // };
 
-// width redux-thunk
+// with redux-thunk
 // export const fetchPosts = () => {
 // 	return async (dispatch, getState) => {
 // 		const response = await jsonPlaceholder.get('/posts');
@@ -429,17 +439,115 @@ import jsonPlaceholder from '../api/jsonPlaceholder';
 // };
 // =>
 export const fetchPosts = () => async dispatch => {
-	const response = await jsonPlaceholder.get('/posts');
+  const response = await jsonPlaceholder.get("/posts");
 
-	dispatch({
-		type: 'FETCH_POSTS',
-		payload: response
-	});
+  dispatch({
+    type: "FETCH_POSTS",
+    payload: response
+  });
 };
 ```
 
-### JSONPlaceholder API
+### flow
 
-jsonplaceholder.typicode.com
+[Action Creators]
+fetchPosts
+fetchUser
+
+[Action]
+{
+type: 'FETCH_POST',
+payload: response.data
+}
+{
+type: 'FETCH_USER',
+payload: response.data
+}
+
+[ **\_\_\_** Store **\_\_\_** ][reducers]
+postsReducer
+userReducer
+[ ____________________ ]
+
+### Ruls of Reducers
+
+1. 첫번째로 reducer가 호출되며 초기화된다.
+
+2. 'undefined'를 제외한 어떤 값이든 리턴해야 한다.
+
+3. PRODUCES 'STATE', OR DATA TO BE USED INSIDE OF YOUR APP USING ONLY PREVIOUS STATE AND THE ACTION
+   [첫번째로 리듀서가 호출될 때]
+   underfined, action #1을 인자로 받아서, reducer는 state v1을 반환한다.
+   [두번째로 리듀서가 호출될 때]
+   state v1과 action #2를 인자로 받아서, reducer는 state v2를 반환한다.
+
+4. MUST NOT RETURN REACH 'OUT OF ITSELF' TO DECIDE WHAT VALUE TO RETURN (REDUCERS ARE PURE)
+   기존 상태와 액션을 통해서만 리턴할 값을 결정해야 한다.
+
+5. state argument를 직접 변경(mutate)하면 안된다.
+
+```js
+// mutate array
+const colors = ['red', 'green']
+colors.push('purple')
+colors
+> ['red', 'green'. 'purple']
+
+// mutate object
+const profile = { name: 'alex'}
+profile.name = 'sam'
+
+
+// immutate
+const name = 'sam'
+name[0]
+> 's'
+name[0] = 'x'
+name[0]
+> 's'
+```
+
+### memoize
+
+https://lodash.com
+
+npm i --save lodash
+
+```js
+function getUser(id) {
+  fetch(id);
+  return "Mad a request!";
+}
+
+// 기존 함수를 감싸서,
+// 아규먼트를 세팅하여 한번만 호출하면,
+// 메모아이제이션 된다.
+// 두번째부터는 기존 함수가 호출되는게 아니라,
+// 메모아이즈 된 리턴값이 반환된다.
+const memoizedGetUser = _.memoize(getUser);
+
+// fetch users
+// export const fetchUser = id => async dispatch => {
+//   const response = await jsonPlaceholder.get(`/users/${id}`);
+
+//   dispatch({ type: "FETCH_USER", payload: response.data });
+// };
+
+// export const fetchUser = function(id) {
+//   return _.memoize(async function(dispatch) {
+//     const response = await jsonPlaceholder.get(`/users/${id}`);
+
+//     dispatch({ type: "FETCH_USER", payload: response.data });
+//   });
+// };
+
+export const fetchUser = id => dispatch => _fetchUser(id, dispatch);
+
+const _fetchUser = _.memoize(async (id, dispatch) => {
+  const response = await jsonPlaceholder.get(`/users/${id}`);
+
+  dispatch({ type: "FETCH_USER", payload: response.data });
+});
+```
 
 ---
