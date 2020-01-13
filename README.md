@@ -14,7 +14,7 @@ import React from "react";
 import ReactDOM from "react-dom";
 
 const App = () => {
-  return <div>Hi There!</div>;
+	return <div>Hi There!</div>;
 };
 
 ReactDOM.render(<App />, document.querySelector("#root"));
@@ -68,16 +68,16 @@ https://semantic-ui.com/
 
 ```jsx
 <ApprovalCard>
-  <CommentDetail
-    author="Sam"
-    timeAgo="Today at 4:45PM"
-    content="content1"
-    avatar={faker.image.avatar()}
-  />
+	<CommentDetail
+		author="Sam"
+		timeAgo="Today at 4:45PM"
+		content="content1"
+		avatar={faker.image.avatar()}
+	/>
 </ApprovalCard>;
 
 {
-  props.children;
+	props.children;
 }
 ```
 
@@ -95,8 +95,8 @@ https://semantic-ui.com/
 
 ```js
 window.navigator.geolocation.getCurrentPosition(
-  position => console.log(position),
-  err => console.log(err)
+	position => console.log(position),
+	err => console.log(err)
 );
 ```
 
@@ -138,12 +138,12 @@ window.navigator.geolocation.getCurrentPosition(
 ```jsx
 // bad
 {
-  props.message || "Loading...";
+	props.message || "Loading...";
 }
 
 // good
 Spinner.defaultProps = {
-  message: "Loading..."
+	message: "Loading..."
 };
 ```
 
@@ -247,11 +247,11 @@ onSearchSubmit = async (term) => {
 import axios from "axios";
 
 export default axios.create({
-  baseURL: "https://api.unsplash.com",
-  headers: {
-    Authorization:
-      "Client-ID 5869ea741bfb94a8215604a6abc0ec1ba600e8515eeeb3dbab751fdfa598640d"
-  }
+	baseURL: "https://api.unsplash.com",
+	headers: {
+		Authorization:
+			"Client-ID 5869ea741bfb94a8215604a6abc0ec1ba600e8515eeeb3dbab751fdfa598640d"
+	}
 });
 ```
 
@@ -396,7 +396,7 @@ github.com/reduxjs/redux-thunk
 import axios from "axios";
 
 export default axios.create({
-  baseURL: "http://jsonplaceholder.typicode.com"
+	baseURL: "http://jsonplaceholder.typicode.com"
 });
 ```
 
@@ -439,12 +439,12 @@ import jsonPlaceholder from "../api/jsonPlaceholder";
 // };
 // =>
 export const fetchPosts = () => async dispatch => {
-  const response = await jsonPlaceholder.get("/posts");
+	const response = await jsonPlaceholder.get("/posts");
 
-  dispatch({
-    type: "FETCH_POSTS",
-    payload: response
-  });
+	dispatch({
+		type: "FETCH_POSTS",
+		payload: response
+	});
 };
 ```
 
@@ -515,8 +515,8 @@ npm i --save lodash
 
 ```js
 function getUser(id) {
-  fetch(id);
-  return "Mad a request!";
+	fetch(id);
+	return "Mad a request!";
 }
 
 // 기존 함수를 감싸서,
@@ -544,10 +544,77 @@ const memoizedGetUser = _.memoize(getUser);
 export const fetchUser = id => dispatch => _fetchUser(id, dispatch);
 
 const _fetchUser = _.memoize(async (id, dispatch) => {
-  const response = await jsonPlaceholder.get(`/users/${id}`);
+	const response = await jsonPlaceholder.get(`/users/${id}`);
 
-  dispatch({ type: "FETCH_USER", payload: response.data });
+	dispatch({ type: "FETCH_USER", payload: response.data });
 });
 ```
 
 ---
+
+# 08.streams
+
+### 프로젝트 목표
+
+- React Router로 네비게이션 구현
+- login/logout
+- redux 폼 핸들링
+- CRUD(Create Read Update Destroy) in React/Redux
+- 에러 핸들링
+
+### React Router libraries
+
+- react-router : 코어 라이브러리 (직접 설치하지 않음)
+- react-router-dom : dom-based apps 네비게이션
+- react-router-native : react-native apps 네비게이션
+- react-router-redux : Redux와 React Router 바인딩
+
+### BrowserRouter, Route, Link
+
+history => BrowserRouter(url 변경을 감지하기 위해 history 리스닝) -> Route(url과 path가 매칭되는 것만 보여줌)
+a 태그 대신 Link => 서버 요청 및 새로고침 없이 컴포넌트만 교체함.
+
+### Different Router Types
+
+Create-React-App Dev Server는 라우터를 다루는 방식 (전통적인 서버와 다름)
+
+
+```txt
+/pagetwo에 대한 정보를 가지고 있나?
+
+=>
+
+dev 리소스 확인 
+
+public 폴더 확인
+
+=> 
+
+없다면, index.html 서브할게.
+
+```
+
+
+
+#### BrowserRouter
+
+TLD(Top Level Domation, .com, .net)나 포트 뒤에 오는 path로 사용함
+
+```txt
+localhost:3000/pagetwo
+```
+
+#### HashRouter
+
+/# 뒤에 오는 것을 path로 사용함.
+
+```txt
+localhost:3000/#/pagetwo
+```
+#### MemoryRouter
+
+네비게이션을 트래킹하기 위해 url을 변경하지 않음.
+
+```txt
+localhost:3000/
+```

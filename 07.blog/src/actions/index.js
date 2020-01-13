@@ -1,10 +1,19 @@
 import _ from "lodash";
 import jsonPlaceholder from "../api/jsonPlaceholder";
 
-export const fetchPostsAndUsers = () => async dispatch => {
-  console.log("about to fetch posts");
+export const fetchPostsAndUsers = () => async (dispatch, getState) => {
   await dispatch(fetchPosts());
-  console.log("fetched posts!");
+  // console.log(getState().posts);
+
+  // const userIds = _.uniq(_.map(getState().posts, 'userId'));
+  // console.log(userIds);
+  // userIds.forEach(id => dispatch(fetchUser(id)));
+
+  _.chain(getState().posts)
+    .map('userId')
+    .uniq()
+    .forEach(id => dispatch(fetchUser(id)))
+    .value();
 };
 
 // Bad approach!!!!
@@ -41,11 +50,11 @@ export const fetchPostsAndUsers = () => async dispatch => {
 // };
 // =>
 export const fetchPosts = () => async dispatch => {
-  const { data } = await jsonPlaceholder.get("/posts");
+  const response = await jsonPlaceholder.get("/posts");
 
   dispatch({
     type: "FETCH_POSTS",
-    payload: data
+    payload: response.data
   });
 };
 
