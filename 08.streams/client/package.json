@@ -18,23 +18,28 @@
     "eject": "react-scripts eject"
   },
   "eslintConfig": {
-		"extends": ["react-app", "airbnb", "prettier"],
-		"parser": "babel-eslint",
+    "extends": [
+      "react-app",
+      "airbnb",
+      "prettier",
+      "prettier/react"
+    ],
+    "parser": "babel-eslint",
     "rules": {
       "react/prefer-stateless-function": 0,
       "react/jsx-filename-extension": 0,
       "react/jsx-one-expression-per-line": 0,
-			"import/no-named-as-default": 0,
-			"import/no-named-as-default-member": 0,
-			"import/no-unresolved": 0,
-			"import/prefer-default-export": 0,
-			"no-underscore-danle": 0,
-			"no-console": 0,
-			"react/forbid-prop-types": 0
+      "import/no-named-as-default": 0,
+      "import/no-named-as-default-member": 0,
+      "import/no-unresolved": 0,
+      "import/prefer-default-export": 0,
+      "no-underscore-danle": 0,
+      "no-console": 0,
+      "react/forbid-prop-types": 0
     },
-		"env": {
-			"browser": true
-		}
+    "env": {
+      "browser": true
+    }
   },
   "browserslist": {
     "production": [
@@ -47,5 +52,9 @@
       "last 1 firefox version",
       "last 1 safari version"
     ]
+  },
+  "devDependencies": {
+    "eslint": "^6.8.0",
+    "eslint-plugin-react": "^7.18.0"
   }
 }
