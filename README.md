@@ -576,7 +576,7 @@ a 태그 대신 Link => 서버 요청 및 새로고침 없이 컴포넌트만 �
 
 ### Different Router Types
 
-Create-React-App Dev Server는 라우터를 다루는 방식 (전통적인 서버와 다름)
+Create-React-App Dev Server가 라우터를 다루는 방식 (전통적인 서버와 다름)
 
 
 ```txt
@@ -594,11 +594,9 @@ public 폴더 확인
 
 ```
 
-
-
 #### BrowserRouter
 
-TLD(Top Level Domation, .com, .net)나 포트 뒤에 오는 path로 사용함
+TLD(Top Level Domation, .com, .net)나 포트 뒤에 오는 path로 사용함.
 
 ```txt
 localhost:3000/pagetwo
